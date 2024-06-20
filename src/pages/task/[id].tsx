@@ -10,6 +10,7 @@ import {
   getDoc,
   addDoc,
   getDocs,
+  deleteDoc,
 } from "firebase/firestore";
 import { Textarea } from "@/components/textarea";
 import { useSession } from "next-auth/react";
@@ -74,6 +75,19 @@ export default function Task({ item, allComments }: ITaskProps) {
     }
   }
 
+  async function handleDeleteComment(id: string) {
+    try {
+      const docRef = doc(db, "comments", id);
+      await deleteDoc(docRef);
+      const filteredList = comments.filter((comment) => comment.id !== id);
+      setComments(filteredList);
+      toast.success("Comentário deletado!");
+    } catch (error) {
+      console.log(error);
+      toast.error("Não foi possível deletar o comentário!");
+    }
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -114,7 +128,12 @@ export default function Task({ item, allComments }: ITaskProps) {
             <div className={styles.headComment}>
               <label className={styles.commentsLabel}>{comment.name}</label>
               {comment.user === session?.user?.email && (
-                <button className={styles.buttonTrash}>
+                <button
+                  className={styles.buttonTrash}
+                  onClick={() => {
+                    handleDeleteComment(comment.id);
+                  }}
+                >
                   <FaTrash size={18} color="#EA3140" />
                 </button>
               )}
@@ -144,8 +163,6 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
       taskId: comment.data()?.taskId,
     });
   });
-
-  console.log("AllComments ===> ", allComments);
 
   const snapshot = await getDoc(docRef);
 
