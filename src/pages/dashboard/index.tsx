@@ -18,7 +18,6 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import { toast } from "react-toastify";
-import { v4 as uuidv4 } from "uuid";
 import Link from "next/link";
 
 interface IDashProps {
