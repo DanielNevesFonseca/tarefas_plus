@@ -15,6 +15,7 @@ import { Textarea } from "@/components/textarea";
 import { useSession } from "next-auth/react";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { toast } from "react-toastify";
+import { FaTrash } from "react-icons/fa";
 
 interface ITaskProps {
   item: {
@@ -33,7 +34,6 @@ interface ICommentProps {
   taskId: string;
   user: string;
   name: string;
-  dataCriacao: string;
 }
 
 export default function Task({ item, allComments }: ITaskProps) {
@@ -51,10 +51,20 @@ export default function Task({ item, allComments }: ITaskProps) {
       const docRef = await addDoc(collection(db, "comments"), {
         comment: input,
         dataCriacao: new Date(),
-        user: session.user.email,
-        name: session.user.name,
+        user: session?.user?.email,
+        name: session?.user?.name,
         taskId: item?.taskId,
       });
+
+      const newCommentData: ICommentProps = {
+        id: docRef.id,
+        comment: input,
+        user: session.user.email,
+        name: session.user.name,
+        taskId: item.taskId,
+      };
+
+      setComments((oldComments) => [...oldComments, newCommentData]);
 
       setInput("");
       toast.success("Comentário adicionado!");
@@ -101,6 +111,14 @@ export default function Task({ item, allComments }: ITaskProps) {
 
         {comments.map((comment) => (
           <article key={comment.id} className={styles.comment}>
+            <div className={styles.headComment}>
+              <label className={styles.commentsLabel}>{comment.name}</label>
+              {comment.user === session?.user?.email && (
+                <button className={styles.buttonTrash}>
+                  <FaTrash size={18} color="#EA3140" />
+                </button>
+              )}
+            </div>
             <p>{comment.comment}</p>
           </article>
         ))}
@@ -120,11 +138,10 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   snapshotComments.forEach((comment) => {
     allComments.push({
       id: comment.id,
-      comment: comment.data().comment,
-      user: comment.data().user,
-      name: comment.data().name,
-      taskId: comment.data().taskId,
-      dataCriacao: new Date(comment.data().dataCriacao.seconds).toDateString(),
+      comment: comment.data()?.comment,
+      user: comment.data()?.user,
+      name: comment.data()?.name,
+      taskId: comment.data()?.taskId,
     });
   });
 
