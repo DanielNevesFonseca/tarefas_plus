@@ -5,6 +5,7 @@ import heroImg from "../../public/assets/hero.png";
 import { GetStaticProps } from "next";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/services/firebaseConnection";
+import favicon from "../../public/favicon.svg";
 
 interface IHomeProps {
   posts: number;
@@ -15,7 +16,8 @@ export default function Home({ comments, posts }: IHomeProps) {
   return (
     <div className={styles.container}>
       <Head>
-        <title>Tasks+ | Organize your tasks easily</title>
+        <title>Tasks+ | Organize suas tarefas</title>
+        <link rel="icon" href={favicon} type="image" />
       </Head>
 
       <main className={styles.main}>
