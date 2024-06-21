@@ -17,7 +17,6 @@ export default function Home({ comments, posts }: IHomeProps) {
     <div className={styles.container}>
       <Head>
         <title>Tasks+ | Organize suas tarefas</title>
-        <link rel="icon" href={favicon} type="image" />
       </Head>
 
       <main className={styles.main}>
